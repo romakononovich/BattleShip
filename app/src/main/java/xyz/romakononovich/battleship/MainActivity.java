@@ -61,12 +61,23 @@ public class MainActivity extends AppCompatActivity {
         }
 
     private void generateShip(int decks) {
-        int startX;
-        int startY;
+        boolean isFree = false;
         Random random = new Random();
-        if (random.nextBoolean()) {
-            startX = random.nextInt(10);
-            startY = random.nextInt(10-decks);
+        int startX = 0;
+        int startY = 0;
+        boolean isVertical = false;
+        while (!isFree) {
+            isVertical = random.nextBoolean();
+            if (isVertical) {
+                startX = random.nextInt(10);
+                startY = random.nextInt(10-decks);
+            } else {
+                startX = random.nextInt(10-decks);
+                startY = random.nextInt(10);
+            }
+            isFree = checkStartCoordination(startX, startY, isVertical, decks);
+        }
+        if (isVertical) {
             for (int j = 0; j<decks; j++) {
                 mGameField[startX][startY+j] = new Cell();
             }
@@ -77,6 +88,48 @@ public class MainActivity extends AppCompatActivity {
                 mGameField[startX+j][startY] = new Cell();
 
             }}
+    }
+
+    private boolean checkStartCoordination(int startX, int startY, boolean isVertical,int decks) {
+        if (isVertical) {
+            for (int i = 0; i < decks; i++) {
+                if (mGameField[startX][startY + i] != null) {
+                    return false;
+                }
+                if ((startX - 1 != -1) && (startY - 1 != -1) &&
+                        mGameField[startX - 1][startY + i - 1] != null) {
+                    return false;
+                }
+                if ((startY - 1 != -1) && i == 0 &&
+                        mGameField[startX][startY + i - 1] != null) {
+                    return false;
+                }
+                if ((startX + 1 != 10) && (startY - 1 != -1) &&
+                        mGameField[startX + 1][startY + i - 1] != null) {
+                    return false;
+                }
+                if ((startX + 1 != 10) &&
+                        mGameField[startX + 1][startY + i] != null) {
+                    return false;
+                }
+                if ((startX + 1 != 10) && (startY + 1 != 10) &&
+                        mGameField[startX + 1][startY + 1] != null) {
+                    return false;
+                }
+                if ((startY + 1 != 10) &&
+                        mGameField[startX][startY + i + 1] != null) {
+                    return false;
+                }
+                if ((startX - 1 != -1) && (startY + 1 != 10) &&
+                        mGameField[startX - 1][startY + i + 1] != null) {
+                    return false;
+                }
+                if ((startX - 1 != -1) && mGameField[startX - 1][startY + i] != null) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     @Override
